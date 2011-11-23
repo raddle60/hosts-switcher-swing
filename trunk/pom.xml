@@ -29,5 +29,10 @@
             <scope>system</scope>
             <systemPath>${basedir}/system-lib/db4o-8.0.224.15975-all-java5.jar</systemPath>
         </dependency>
+        <dependency>
+        	<groupId>commons-lang</groupId>
+        	<artifactId>commons-lang</artifactId>
+        	<version>2.6</version>
+        </dependency>
     </dependencies>
 </project>

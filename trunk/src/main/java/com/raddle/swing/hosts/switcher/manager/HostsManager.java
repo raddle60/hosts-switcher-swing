@@ -2,9 +2,18 @@ package com.raddle.swing.hosts.switcher.manager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.raddle.swing.hosts.switcher.dao.Db4oDao;
 import com.raddle.swing.hosts.switcher.model.Host;
 import com.raddle.swing.hosts.switcher.model.Hosts;
 
@@ -15,6 +24,7 @@ import com.raddle.swing.hosts.switcher.model.Hosts;
  */
 public class HostsManager {
     private static final Pattern SPLIT_PATTERN = Pattern.compile("\\s+");
+    private Db4oDao db4oDao = new Db4oDao();
 
     /**
      * 从文件解析hosts
@@ -52,5 +62,28 @@ public class HostsManager {
             throw new RuntimeException(e.getMessage(), e);
         }
         return hosts;
+    }
+
+    public void writeHosts(Hosts hosts, Writer writer) {
+        /// 转成hosts格式
+        Map<String, Set<String>> hostMap = new HashMap<String, Set<String>>();
+        for (Host host : hosts.getHostList()) {
+            Set<String> domains = hostMap.get(host.getIp());
+            if (domains == null) {
+                domains = new HashSet<String>();
+                hostMap.put(host.getIp(), domains);
+            }
+            domains.add(host.getDomain());
+        }
+        ///
+        PrintWriter bw = new PrintWriter(writer);
+        // 输入注释
+        bw.println("######generate by hosts manager######");
+        bw.println("######" + StringUtils.defaultString(hosts.getEnv()) + "######");
+        for (String ip : hostMap.keySet()) {
+            bw.println(ip + " " + StringUtils.join(hostMap.get(ip), " "));
+        }
+        bw.flush();
+        bw.close();
     }
 }

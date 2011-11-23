@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class Hosts implements Serializable {
     private static final long serialVersionUID = 1L;
-    private String curEnv;
+    private String env;
     private String parentEnv;
     private Map<String, Host> hostMap = new HashMap<String, Host>();
 
@@ -59,12 +59,12 @@ public class Hosts implements Serializable {
         return sb.substring(1);
     }
 
-    public String getCurEnv() {
-        return curEnv;
+    public String getEnv() {
+        return env;
     }
 
-    public void setCurEnv(String curEnv) {
-        this.curEnv = curEnv;
+    public void setEnv(String env) {
+        this.env = env;
     }
 
     public String getParentEnv() {
