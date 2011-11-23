@@ -1,5 +1,6 @@
 package com.raddle.swing.hosts.switcher;
 
+import java.awt.Color;
 import java.awt.Rectangle;
 
 import javax.swing.JComboBox;
@@ -7,6 +8,7 @@ import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 public class HostPane extends JDesktopPane {
 
@@ -47,8 +49,8 @@ public class HostPane extends JDesktopPane {
         this.add(curEnvLeb, null);
         this.add(jLabel1, null);
         this.add(getInheritFromComb(), null);
-//        this.add(getJScrollPane(), null);
         this.add(getJScrollPane1(), null);
+        this.setBackground(new Color(240,240,240));
     }
 
     /**
@@ -86,6 +88,12 @@ public class HostPane extends JDesktopPane {
     private JTable getJTable() {
         if (jTable == null) {
             jTable = new JTable();
+            jTable.getTableHeader().setReorderingAllowed(false);
+            DefaultTableModel model = (DefaultTableModel) jTable.getModel();
+            model.addColumn("域名");
+            model.addColumn("继承");
+            model.addColumn("覆盖");
+            model.addColumn("最终");
         }
         return jTable;
     }
