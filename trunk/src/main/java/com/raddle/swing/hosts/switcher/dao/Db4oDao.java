@@ -8,6 +8,11 @@ import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.raddle.swing.hosts.switcher.model.Hosts;
 
+/**
+ * 功能描述：
+ * @author xurong
+ * time : 2011-11-23 下午06:14:44
+ */
 public class Db4oDao {
     private String dbfile = "hosts.db4o";
 

@@ -3,10 +3,11 @@ package com.raddle.swing.hosts.switcher.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.raddle.swing.hosts.switcher.sort.DomainRevertComparator;
 
 /**
  * 功能描述：
@@ -33,30 +34,12 @@ public class Hosts implements Serializable {
 
     public List<Host> getHostList() {
         List<String> domains = new ArrayList<String>(hostMap.keySet());
-        Collections.sort(domains, new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return revertDomain(o1).compareTo(revertDomain(o2));
-            }
-        });
+        Collections.sort(domains, new DomainRevertComparator());
         List<Host> hostList = new ArrayList<Host>();
         for (String domain : domains) {
             hostList.add(hostMap.get(domain));
         }
         return hostList;
-    }
-
-    /**
-     * 将域名到过来，比如google.com变成com.google
-     * @return
-     */
-    private String revertDomain(String domain) {
-        String[] strings = domain.split("\\.");
-        StringBuilder sb = new StringBuilder();
-        for (int i = strings.length - 1; i >= 0; i--) {
-            sb.append(".").append(strings[i]);
-        }
-        return sb.substring(1);
     }
 
     public String getEnv() {
