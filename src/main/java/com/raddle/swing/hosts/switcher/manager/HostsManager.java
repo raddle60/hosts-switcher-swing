@@ -5,13 +5,18 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 
 import com.raddle.swing.hosts.switcher.dao.Db4oDao;
 import com.raddle.swing.hosts.switcher.model.Host;
@@ -78,10 +83,15 @@ public class HostsManager {
         ///
         PrintWriter bw = new PrintWriter(writer);
         // 输入注释
-        bw.println("######generate by hosts manager######");
+        bw.println("######generate by raddle hosts manager " + DateFormatUtils.format(new Date(), "yyyy/M/d H:m:s")
+                + "######");
         bw.println("######" + StringUtils.defaultString(hosts.getEnv()) + "######");
         for (String ip : hostMap.keySet()) {
-            bw.println(ip + " " + StringUtils.join(hostMap.get(ip), " "));
+            List<String> domainList = new ArrayList<String>(hostMap.get(ip));
+            Collections.sort(domainList);
+            for (String domain : domainList) {
+                bw.println(ip + " " + domain);
+            }
         }
         bw.flush();
         bw.close();

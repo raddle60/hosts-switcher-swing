@@ -30,6 +30,7 @@ public class HostsManagerTest {
             System.out.println(host.getDomain() + " " + host.getIp());
         }
         System.out.println("********************************");
+        parseHosts.setEnv("本机");
         StringWriter sw = new StringWriter();
         hostsManager.writeHosts(parseHosts, sw);
         System.out.println(sw.getBuffer());
