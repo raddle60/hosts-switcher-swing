@@ -3,6 +3,7 @@ package com.raddle.swing.hosts.switcher;
 import java.awt.BorderLayout;
 import java.awt.Event;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -55,11 +56,14 @@ public class HostsSwitcherApplication {
         if (jFrame == null) {
             jFrame = new JFrame();
             jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            jFrame.setLocationRelativeTo(null);
             jFrame.setJMenuBar(getJJMenuBar());
             jFrame.setSize(668, 501);
             jFrame.setContentPane(getJContentPane());
             jFrame.setTitle("Application");
+            //居中显示
+            double width = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+            double height = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+            jFrame.setLocation((int) (width - jFrame.getWidth()) / 2, (int) (height - jFrame.getHeight()) / 2);
         }
         return jFrame;
     }
@@ -146,6 +150,7 @@ public class HostsSwitcherApplication {
             exitMenuItem = new JMenuItem();
             exitMenuItem.setText("Exit");
             exitMenuItem.addActionListener(new ActionListener() {
+
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     System.exit(0);
@@ -165,6 +170,7 @@ public class HostsSwitcherApplication {
             aboutMenuItem = new JMenuItem();
             aboutMenuItem.setText("About");
             aboutMenuItem.addActionListener(new ActionListener() {
+
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     JDialog aboutDialog = getAboutDialog();
@@ -282,6 +288,7 @@ public class HostsSwitcherApplication {
      */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
+
             @Override
             public void run() {
                 HostsSwitcherApplication application = new HostsSwitcherApplication();
