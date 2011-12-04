@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -82,6 +84,15 @@ public class HostPane extends JPanel {
         add(scrollPane);
 
         table = new JTable();
+        table.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    editDomain();
+                }
+            }
+        });
         scrollPane.setViewportView(table);
 
         JLabel label_2 = new JLabel("从文件载入");
@@ -229,27 +240,7 @@ public class HostPane extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (table.getSelectedRow() != -1) {
-                    HostWrapper wrapper = (HostWrapper) table.getValueAt(table.getSelectedRow(), 0);
-                    HostEditDialog edit = new HostEditDialog();
-                    edit.setDomain(wrapper.getDomain());
-                    edit.setOldIp(wrapper.getIp());
-                    edit.setModal(true);
-                    edit.setLocationRelativeTo(HostPane.this);
-                    edit.setVisible(true);
-                    if (edit.isOk()) {
-                        hosts.getHost(edit.getDomain()).setIp(edit.getNewIp());
-                        if (edit.isEditSameIp()) {
-                            // 修改所有相同的ip
-                            for (Host host : hosts.getHostList()) {
-                                if (StringUtils.equals(edit.getOldIp(), host.getIp())) {
-                                    host.setIp(edit.getNewIp());
-                                }
-                            }
-                        }
-                        refreshTable();
-                    }
-                }
+                editDomain();
             }
         });
         editBtn.setBounds(236, 69, 60, 25);
@@ -277,6 +268,30 @@ public class HostPane extends JPanel {
         for (Host host : hosts.getHostList()) {
             HostWrapper wrapper = new HostWrapper(hostsManager, hosts, host);
             model.addRow(new Object[] { wrapper, wrapper.getInheritIp(), wrapper.getIp(), wrapper.getFinalIp() });
+        }
+    }
+
+    private void editDomain() {
+        if (table.getSelectedRow() != -1) {
+            HostWrapper wrapper = (HostWrapper) table.getValueAt(table.getSelectedRow(), 0);
+            HostEditDialog edit = new HostEditDialog();
+            edit.setDomain(wrapper.getDomain());
+            edit.setOldIp(wrapper.getIp());
+            edit.setModal(true);
+            edit.setLocationRelativeTo(HostPane.this);
+            edit.setVisible(true);
+            if (edit.isOk()) {
+                hosts.getHost(edit.getDomain()).setIp(edit.getNewIp());
+                if (edit.isEditSameIp()) {
+                    // 修改所有相同的ip
+                    for (Host host : hosts.getHostList()) {
+                        if (StringUtils.equals(edit.getOldIp(), host.getIp())) {
+                            host.setIp(edit.getNewIp());
+                        }
+                    }
+                }
+                refreshTable();
+            }
         }
     }
 }
