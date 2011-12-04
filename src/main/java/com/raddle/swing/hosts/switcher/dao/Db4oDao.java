@@ -1,6 +1,7 @@
 package com.raddle.swing.hosts.switcher.dao;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -44,7 +45,7 @@ public class Db4oDao {
         if (new File(dbfile).exists()) {
             ObjectContainer db = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), dbfile);
             try {
-                return db.queryByExample(Hosts.class);
+                return retrieveAllFromObjectSet(db.queryByExample(Hosts.class), Hosts.class);
             } finally {
                 db.close();
             }
@@ -64,7 +65,9 @@ public class Db4oDao {
             Hosts qh = new Hosts();
             qh.setId(hosts.getId());
             Hosts existHost = queryHosts(db, qh);
-            db.delete(existHost);
+            if (existHost != null) {
+                db.delete(existHost);
+            }
             db.store(hosts);
         } finally {
             db.close();
@@ -92,6 +95,18 @@ public class Db4oDao {
             throw new IllegalStateException("too many results");
         } else if (hostsSet.size() == 1) {
             return (Hosts) hostsSet.get(0);
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> List<T> retrieveAllFromObjectSet(ObjectSet<Object> objectSet, Class<T> targetClass) {
+        if (objectSet != null) {
+            List<T> list = new ArrayList<T>();
+            for (Object t : objectSet) {
+                list.add((T) t);
+            }
+            return list;
         }
         return null;
     }

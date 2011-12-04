@@ -28,6 +28,7 @@ import com.raddle.swing.hosts.switcher.model.Hosts;
  * time : 2011-11-23 下午03:52:37
  */
 public class HostsManager {
+
     private static final Pattern SPLIT_PATTERN = Pattern.compile("\\s+");
     private Db4oDao db4oDao = new Db4oDao();
 
@@ -83,8 +84,7 @@ public class HostsManager {
         ///
         PrintWriter bw = new PrintWriter(writer);
         // 输入注释
-        bw.println("######generate by raddle hosts manager " + DateFormatUtils.format(new Date(), "yyyy/M/d H:m:s")
-                + "######");
+        bw.println("######generate by raddle hosts manager " + DateFormatUtils.format(new Date(), "yyyy/M/d H:m:s") + "######");
         bw.println("######" + StringUtils.defaultString(hosts.getEnv()) + "######");
         for (String ip : hostMap.keySet()) {
             List<String> domainList = new ArrayList<String>(hostMap.get(ip));
@@ -95,5 +95,17 @@ public class HostsManager {
         }
         bw.flush();
         bw.close();
+    }
+
+    public List<Hosts> getAllHosts() {
+        List<Hosts> list = db4oDao.getAllHosts();
+        if (list == null) {
+            list = new ArrayList<Hosts>();
+        }
+        return list;
+    }
+
+    public void saveHosts(Hosts hosts) {
+        db4oDao.saveHosts(hosts);
     }
 }

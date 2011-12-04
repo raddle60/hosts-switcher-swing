@@ -2,10 +2,15 @@ package com.raddle.swing.hosts.switcher.pane;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.List;
+import java.util.UUID;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -16,6 +21,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.raddle.swing.hosts.switcher.manager.HostsManager;
 import com.raddle.swing.hosts.switcher.model.Host;
 import com.raddle.swing.hosts.switcher.model.Hosts;
@@ -25,10 +32,11 @@ import com.raddle.swing.layout.LayoutUtils;
 public class HostPane extends JPanel {
 
     private static final long serialVersionUID = 1L;
-    private JTextField curEnvTxt;
+    private JTextField envTxt;
     private JTable table;
     private JTextField importTxt;
     private HostsManager hostsManager = new HostsManager();
+    private Hosts hosts = new Hosts();
 
     /**
      * Create the panel.
@@ -36,14 +44,21 @@ public class HostPane extends JPanel {
     public HostPane(){
         setLayout(null);
 
-        JLabel label = new JLabel("当前环境");
+        JLabel label = new JLabel("环境名称");
         label.setBounds(12, 12, 60, 15);
         add(label);
 
-        curEnvTxt = new JTextField();
-        curEnvTxt.setBounds(110, 8, 114, 24);
-        add(curEnvTxt);
-        curEnvTxt.setColumns(10);
+        envTxt = new JTextField();
+        envTxt.addFocusListener(new FocusAdapter() {
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                hosts.setEnv(envTxt.getText());
+            }
+        });
+        envTxt.setBounds(110, 8, 114, 24);
+        add(envTxt);
+        envTxt.setColumns(10);
 
         JLabel label_1 = new JLabel("继承自");
         label_1.setBounds(230, 12, 60, 15);
@@ -52,6 +67,14 @@ public class HostPane extends JPanel {
         JComboBox inheritComb = new JComboBox();
         inheritComb.setBounds(297, 7, 108, 24);
         add(inheritComb);
+        // 初始化下拉框
+        List<Hosts> allHosts = hostsManager.getAllHosts();
+        DefaultComboBoxModel hostsModel = (DefaultComboBoxModel) inheritComb.getModel();
+        hostsModel.removeAllElements();
+        hostsModel.addElement(null);
+        for (Hosts hosts : allHosts) {
+            hostsModel.addElement(new HostsItem(hosts.getId(), hosts.getEnv()));
+        }
 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBounds(12, 106, 416, 249);
@@ -110,6 +133,30 @@ public class HostPane extends JPanel {
         model.addColumn("最终");
         table.setModel(model);
         LayoutUtils.anchorFixedBorder(this, scrollPane).anchorRight(10).anchorBottom(10);
+
+        JButton saveBtn = new JButton("保存");
+        saveBtn.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (StringUtils.isBlank(hosts.getEnv())) {
+                    JOptionPane.showMessageDialog(null, "环境名称不能为空");
+                    return;
+                }
+                if (StringUtils.isBlank(hosts.getId())) {
+                    hosts.setId(UUID.randomUUID().toString());
+                }
+                try {
+                    hostsManager.saveHosts(hosts);
+                    JOptionPane.showMessageDialog(null, "保存成功");
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "保存失败," + e1.getMessage());
+                }
+            }
+        });
+        saveBtn.setBounds(270, 69, 117, 25);
+        add(saveBtn);
     }
 
 }
