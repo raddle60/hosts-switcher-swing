@@ -7,6 +7,7 @@ import java.awt.event.FocusEvent;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.UUID;
 
@@ -130,6 +131,24 @@ public class HostPane extends JPanel {
         add(importBtn);
 
         JButton previewBtn = new JButton("预览");
+        previewBtn.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    StringWriter writer = new StringWriter();
+                    hostsManager.writeHosts(hosts, writer);
+                    PreviewDialog preview = new PreviewDialog();
+                    preview.setLocationRelativeTo(HostPane.this);
+                    preview.setTitle("预览 - " + envTxt.getText());
+                    preview.getTextPane().setText(writer.getBuffer().toString());
+                    preview.setModal(true);
+                    preview.setVisible(true);
+                } catch (Exception e1) {
+                    JOptionPane.showMessageDialog(null, "预览失败," + e1.getMessage());
+                }
+            }
+        });
         previewBtn.setBounds(12, 69, 117, 25);
         add(previewBtn);
 
