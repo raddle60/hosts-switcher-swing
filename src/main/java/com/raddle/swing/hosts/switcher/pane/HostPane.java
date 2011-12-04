@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.List;
 import java.util.UUID;
@@ -99,20 +98,31 @@ public class HostPane extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 File selectFile = FileSelectUtils.selectFile(importTxt.getText(), null);
                 if (selectFile != null) {
-                    importTxt.setText(selectFile.getAbsolutePath());
-                    try {
-                        Hosts hosts = hostsManager.parseHosts(new FileReader(selectFile));
-                        // 填入jtable
-                        DefaultTableModel model = (DefaultTableModel) table.getModel();
-                        for (Host host : hosts.getHostList()) {
-                            model.addRow(new Object[] { host.getDomain(), null, host.getIp(), host.getIp() });
+                    if (selectFile.exists()) {
+                        importTxt.setText(selectFile.getAbsolutePath());
+                        try {
+                            Hosts importHosts = hostsManager.parseHosts(new FileReader(selectFile));
+                            // 合并到已有的host
+                            for (Host host : importHosts.getHostList()) {
+                                hosts.setHost(host);
+                            }
+                            // 填入jtable
+                            DefaultTableModel model = (DefaultTableModel) table.getModel();
+                            // 清除以前的
+                            model.getDataVector().removeAllElements();
+                            // 加入新的
+                            for (Host host : hosts.getHostList()) {
+                                model.addRow(new Object[] { host.getDomain(), null, host.getIp(), host.getIp() });
+                            }
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                            JOptionPane.showMessageDialog(null, e1.getMessage());
                         }
-
-                    } catch (FileNotFoundException e1) {
-                        e1.printStackTrace();
-                        JOptionPane.showMessageDialog(null, e1.getMessage());
+                    } else {
+                        JOptionPane.showMessageDialog(null, selectFile.getAbsoluteFile() + ", 不存在");
                     }
                 }
+
             }
         });
         importBtn.setBounds(417, 34, 117, 25);
@@ -158,5 +168,4 @@ public class HostPane extends JPanel {
         saveBtn.setBounds(270, 69, 117, 25);
         add(saveBtn);
     }
-
 }
