@@ -3,6 +3,8 @@ package com.raddle.swing.hosts.switcher.dao;
 import java.io.File;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
@@ -14,23 +16,24 @@ import com.raddle.swing.hosts.switcher.model.Hosts;
  * time : 2011-11-23 下午06:14:44
  */
 public class Db4oDao {
+
     private String dbfile = "hosts.db4o";
 
-    public Db4oDao() {
+    public Db4oDao(){
     }
 
-    public Db4oDao(String dbfile) {
+    public Db4oDao(String dbfile){
         this.dbfile = dbfile;
     }
 
-    synchronized public Hosts getHosts(String env) {
-        if (env == null || env.length() == 0) {
-            throw new IllegalArgumentException("env is empty");
+    synchronized public Hosts getHosts(String id) {
+        if (StringUtils.isEmpty(id)) {
+            throw new IllegalArgumentException("id is empty");
         }
         ObjectContainer db = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), dbfile);
         try {
             Hosts qh = new Hosts();
-            qh.setEnv(env);
+            qh.setId(id);
             return queryHosts(db, qh);
         } finally {
             db.close();
@@ -50,13 +53,16 @@ public class Db4oDao {
     }
 
     synchronized public void saveHosts(Hosts hosts) {
-        if (hosts.getEnv() == null || hosts.getEnv().length() == 0) {
+        if (StringUtils.isEmpty(hosts.getId())) {
+            throw new IllegalArgumentException("id is empty");
+        }
+        if (StringUtils.isEmpty(hosts.getEnv())) {
             throw new IllegalArgumentException("env is empty");
         }
         ObjectContainer db = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), dbfile);
         try {
             Hosts qh = new Hosts();
-            qh.setEnv(hosts.getEnv());
+            qh.setId(hosts.getId());
             Hosts existHost = queryHosts(db, qh);
             db.delete(existHost);
             db.store(hosts);
@@ -65,14 +71,14 @@ public class Db4oDao {
         }
     }
 
-    synchronized public void deleteHosts(String env) {
-        if (env == null || env.length() == 0) {
-            throw new IllegalArgumentException("env is empty");
+    synchronized public void deleteHosts(String id) {
+        if (StringUtils.isEmpty(id)) {
+            throw new IllegalArgumentException("id is empty");
         }
         ObjectContainer db = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), dbfile);
         try {
             Hosts qh = new Hosts();
-            qh.setEnv(env);
+            qh.setId(id);
             Hosts existHost = queryHosts(db, qh);
             db.delete(existHost);
         } finally {

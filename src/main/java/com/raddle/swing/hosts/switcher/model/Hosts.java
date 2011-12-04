@@ -15,10 +15,12 @@ import com.raddle.swing.hosts.switcher.sort.DomainRevertComparator;
  * time : 2011-11-23 下午03:52:08
  */
 public class Hosts implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    private String env;
-    private String parentEnv;
-    private Map<String, Host> hostMap = new HashMap<String, Host>();
+    private String            id;
+    private String            env;
+    private String            parentId;
+    private Map<String, Host> hostMap          = new HashMap<String, Host>();
 
     public Host getHost(String domain) {
         return hostMap.get(domain);
@@ -50,12 +52,20 @@ public class Hosts implements Serializable {
         this.env = env;
     }
 
-    public String getParentEnv() {
-        return parentEnv;
+    public String getId() {
+        return id;
     }
 
-    public void setParentEnv(String parentEnv) {
-        this.parentEnv = parentEnv;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 
 }

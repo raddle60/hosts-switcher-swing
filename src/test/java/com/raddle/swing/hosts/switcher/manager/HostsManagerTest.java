@@ -15,6 +15,7 @@ public class HostsManagerTest {
     @Test
     public void testParseHosts() throws Exception {
         HostsManager hostsManager = new HostsManager();
+        System.out.println("********************************");
         Hosts parseHosts = hostsManager.parseHosts(new FileReader(
                 new File(hostsPath)));
         for (Host host : parseHosts.getHostList()) {
@@ -27,6 +28,7 @@ public class HostsManagerTest {
         HostsManager hostsManager = new HostsManager();
         Hosts parseHosts = hostsManager.parseHosts(new FileReader(
                 new File(hostsPath)));
+        System.out.println("********************************");
         for (Host host : parseHosts.getHostList()) {
             System.out.println(host.getDomain() + " " + host.getIp());
         }
