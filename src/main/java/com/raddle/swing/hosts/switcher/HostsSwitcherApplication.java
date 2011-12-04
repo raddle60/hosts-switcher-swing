@@ -57,9 +57,9 @@ public class HostsSwitcherApplication {
             jFrame = new JFrame();
             jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             jFrame.setJMenuBar(getJJMenuBar());
-            jFrame.setSize(668, 501);
+            jFrame.setSize(796, 572);
             jFrame.setContentPane(getJContentPane());
-            jFrame.setTitle("Application");
+            jFrame.setTitle("Hosts 管理器");
             //居中显示
             double width = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
             double height = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
