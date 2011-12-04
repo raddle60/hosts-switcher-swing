@@ -305,6 +305,7 @@ public class HostPane extends JPanel {
     }
 
     private void refreshTable() {
+        table.clearSelection();
         // 填入jtable
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         // 清除以前的
