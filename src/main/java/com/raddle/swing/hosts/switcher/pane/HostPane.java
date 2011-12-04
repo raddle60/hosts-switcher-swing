@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -100,6 +102,15 @@ public class HostPane extends JPanel {
         add(label_2);
 
         importTxt = new JTextField();
+        importTxt.addKeyListener(new KeyAdapter() {
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyChar() == '\n') {
+                    importFile();
+                }
+            }
+        });
         importTxt.setBounds(110, 34, 295, 25);
         add(importTxt);
         importTxt.setColumns(10);
@@ -109,26 +120,7 @@ public class HostPane extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                File selectFile = FileSelectUtils.selectFile(importTxt.getText(), null);
-                if (selectFile != null) {
-                    if (selectFile.exists()) {
-                        importTxt.setText(selectFile.getAbsolutePath());
-                        try {
-                            Hosts importHosts = hostsManager.parseHosts(new FileReader(selectFile));
-                            // 合并到已有的host
-                            for (Host host : importHosts.getHostList()) {
-                                hosts.setHost(host);
-                            }
-                            refreshTable();
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                            JOptionPane.showMessageDialog(null, e1.getMessage());
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, selectFile.getAbsoluteFile() + ", 不存在");
-                    }
-                }
-
+                importFile();
             }
         });
         importBtn.setBounds(417, 34, 72, 25);
@@ -291,6 +283,35 @@ public class HostPane extends JPanel {
                     }
                 }
                 refreshTable();
+            }
+        }
+    }
+
+    private void importFile() {
+        File selectFile = new File(importTxt.getText());
+        if (!selectFile.exists() || !selectFile.isFile()) {
+            selectFile = FileSelectUtils.selectFile(importTxt.getText(), null);
+        }
+        if (selectFile != null) {
+            if (selectFile.exists()) {
+                if (selectFile.isFile()) {
+                    importTxt.setText(selectFile.getAbsolutePath());
+                    try {
+                        Hosts importHosts = hostsManager.parseHosts(new FileReader(selectFile));
+                        // 合并到已有的host
+                        for (Host host : importHosts.getHostList()) {
+                            hosts.setHost(host);
+                        }
+                        refreshTable();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                        JOptionPane.showMessageDialog(null, e1.getMessage());
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, selectFile.getAbsoluteFile() + ", 不是文件");
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, selectFile.getAbsoluteFile() + ", 不存在");
             }
         }
     }
