@@ -3,24 +3,31 @@ package com.raddle.swing.hosts.switcher.pane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import com.raddle.swing.hosts.switcher.manager.HostsManager;
+import com.raddle.swing.hosts.switcher.model.Host;
+import com.raddle.swing.hosts.switcher.model.Hosts;
 import com.raddle.swing.hosts.switcher.utils.FileSelectUtils;
 
 public class HostPane extends JPanel {
 
     private static final long serialVersionUID = 1L;
-    private JTextField        curEnvTxt;
-    private JTable            table;
-    private JTextField        importTxt;
+    private JTextField curEnvTxt;
+    private JTable table;
+    private JTextField importTxt;
+    private HostsManager hostsManager = new HostsManager();
 
     /**
      * Create the panel.
@@ -69,6 +76,18 @@ public class HostPane extends JPanel {
                 File selectFile = FileSelectUtils.selectFile(importTxt.getText(), null);
                 if (selectFile != null) {
                     importTxt.setText(selectFile.getAbsolutePath());
+                    try {
+                        Hosts hosts = hostsManager.parseHosts(new FileReader(selectFile));
+                        // 填入jtable
+                        DefaultTableModel model = (DefaultTableModel) table.getModel();
+                        for (Host host : hosts.getHostList()) {
+                            model.addRow(new Object[] { host.getDomain(), null, host.getIp(), host.getIp() });
+                        }
+
+                    } catch (FileNotFoundException e1) {
+                        e1.printStackTrace();
+                        JOptionPane.showMessageDialog(null, e1.getMessage());
+                    }
                 }
             }
         });
@@ -83,12 +102,12 @@ public class HostPane extends JPanel {
         exportBtn.setBounds(141, 69, 117, 25);
         add(exportBtn);
         table.getTableHeader().setReorderingAllowed(false);
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        DefaultTableModel model = new HostTableModel();
         model.addColumn("域名");
         model.addColumn("继承");
         model.addColumn("覆盖");
         model.addColumn("最终");
-
+        table.setModel(model);
     }
 
 }
