@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
-import javax.swing.JDesktopPane;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -19,6 +18,8 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+
+import com.raddle.swing.hosts.switcher.pane.HostPane;
 
 public class HostsSwitcherApplication {
 
@@ -44,7 +45,6 @@ public class HostsSwitcherApplication {
     private JDialog aboutDialog = null;
     private JPanel aboutContentPane = null;
     private JLabel aboutVersionLabel = null;
-    private JDesktopPane jDesktopPane = null;
 
     /**
      * This method initializes jFrame
@@ -55,8 +55,9 @@ public class HostsSwitcherApplication {
         if (jFrame == null) {
             jFrame = new JFrame();
             jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            jFrame.setLocationRelativeTo(null);
             jFrame.setJMenuBar(getJJMenuBar());
-            jFrame.setSize(300, 200);
+            jFrame.setSize(668, 501);
             jFrame.setContentPane(getJContentPane());
             jFrame.setTitle("Application");
         }
@@ -70,9 +71,7 @@ public class HostsSwitcherApplication {
      */
     private JPanel getJContentPane() {
         if (jContentPane == null) {
-            jContentPane = new JPanel();
-            jContentPane.setLayout(new BorderLayout());
-            jContentPane.add(getJDesktopPane(), BorderLayout.CENTER);
+            jContentPane = new HostPane();
         }
         return jContentPane;
     }
@@ -276,18 +275,6 @@ public class HostsSwitcherApplication {
             saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK, true));
         }
         return saveMenuItem;
-    }
-
-    /**
-     * This method initializes jDesktopPane
-     *
-     * @return javax.swing.JDesktopPane
-     */
-    private JDesktopPane getJDesktopPane() {
-        if (jDesktopPane == null) {
-            jDesktopPane = new HostPane();
-        }
-        return jDesktopPane;
     }
 
     /**
