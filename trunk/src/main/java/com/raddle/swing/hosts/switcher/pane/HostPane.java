@@ -239,14 +239,62 @@ public class HostPane extends JPanel {
         add(editBtn);
 
         JButton delBtn = new JButton("删除");
+        delBtn.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int[] selectedRows = table.getSelectedRows();
+                if (selectedRows.length > 0) {
+                    for (int row : selectedRows) {
+                        HostWrapper wrapper = (HostWrapper) table.getValueAt(row, 0);
+                        hosts.removeHost(wrapper.getDomain());
+                    }
+                    refreshTable();
+                } else {
+                    JOptionPane.showMessageDialog(null, "请选择域名");
+                }
+            }
+        });
         delBtn.setBounds(308, 69, 60, 25);
         add(delBtn);
 
         JButton deactiveBtn = new JButton("禁用");
+        deactiveBtn.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int[] selectedRows = table.getSelectedRows();
+                if (selectedRows.length > 0) {
+                    for (int row : selectedRows) {
+                        HostWrapper wrapper = (HostWrapper) table.getValueAt(row, 0);
+                        hosts.getHost(wrapper.getDomain()).setActive(false);
+                    }
+                    refreshTable();
+                } else {
+                    JOptionPane.showMessageDialog(null, "请选择域名");
+                }
+            }
+        });
         deactiveBtn.setBounds(382, 69, 60, 25);
         add(deactiveBtn);
 
         JButton activeBtn = new JButton("启用");
+        activeBtn.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int[] selectedRows = table.getSelectedRows();
+                if (selectedRows.length > 0) {
+                    for (int row : selectedRows) {
+                        HostWrapper wrapper = (HostWrapper) table.getValueAt(row, 0);
+                        hosts.getHost(wrapper.getDomain()).setActive(true);
+                    }
+                    refreshTable();
+                } else {
+                    JOptionPane.showMessageDialog(null, "请选择域名");
+                }
+            }
+        });
         activeBtn.setBounds(458, 69, 60, 25);
         add(activeBtn);
     }
