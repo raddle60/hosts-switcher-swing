@@ -25,6 +25,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -61,7 +62,7 @@ public class HostPane extends JPanel {
                 hosts.setEnv(envTxt.getText());
             }
         });
-        envTxt.setBounds(110, 8, 114, 24);
+        envTxt.setBounds(110, 5, 114, 28);
         add(envTxt);
         envTxt.setColumns(10);
 
@@ -70,7 +71,7 @@ public class HostPane extends JPanel {
         add(label_1);
 
         JComboBox inheritComb = new JComboBox();
-        inheritComb.setBounds(297, 7, 108, 24);
+        inheritComb.setBounds(297, 5, 108, 28);
         add(inheritComb);
         // 初始化下拉框
         List<Hosts> allHosts = hostsManager.getAllHosts();
@@ -82,7 +83,7 @@ public class HostPane extends JPanel {
         }
 
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(12, 106, 416, 249);
+        scrollPane.setBounds(12, 106, 629, 396);
         add(scrollPane);
 
         table = new JTable();
@@ -111,7 +112,7 @@ public class HostPane extends JPanel {
                 }
             }
         });
-        importTxt.setBounds(110, 34, 295, 25);
+        importTxt.setBounds(110, 34, 295, 30);
         add(importTxt);
         importTxt.setColumns(10);
 
@@ -179,6 +180,10 @@ public class HostPane extends JPanel {
         model.addColumn("覆盖");
         model.addColumn("最终");
         table.setModel(model);
+        TableCellRenderer tableCellRenderer = new HostTableCellRenderer();
+        for (int i = 0; i < table.getColumnModel().getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setCellRenderer(tableCellRenderer);
+        }
         LayoutUtils.anchorFixedBorder(this, scrollPane).anchorRight(10).anchorBottom(10);
 
         JButton saveBtn = new JButton("保存");

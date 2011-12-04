@@ -56,7 +56,7 @@ public class HostEditDialog extends JDialog {
         }
         {
             domainLeb = new JLabel("");
-            domainLeb.setBounds(94, 12, 272, 15);
+            domainLeb.setBounds(94, 12, 272, 19);
             contentPanel.add(domainLeb);
         }
         {
@@ -81,7 +81,7 @@ public class HostEditDialog extends JDialog {
         }
         {
             oldIpLeb = new JLabel("");
-            oldIpLeb.setBounds(94, 43, 272, 15);
+            oldIpLeb.setBounds(94, 43, 272, 19);
             contentPanel.add(oldIpLeb);
         }
         {
