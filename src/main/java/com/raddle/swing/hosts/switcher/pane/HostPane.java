@@ -108,14 +108,7 @@ public class HostPane extends JPanel {
                             for (Host host : importHosts.getHostList()) {
                                 hosts.setHost(host);
                             }
-                            // 填入jtable
-                            DefaultTableModel model = (DefaultTableModel) table.getModel();
-                            // 清除以前的
-                            model.getDataVector().removeAllElements();
-                            // 加入新的
-                            for (Host host : hosts.getHostList()) {
-                                model.addRow(new Object[] { host.getDomain(), null, host.getIp(), host.getIp() });
-                            }
+                            refreshTable();
                         } catch (Exception e1) {
                             e1.printStackTrace();
                             JOptionPane.showMessageDialog(null, e1.getMessage());
@@ -208,5 +201,38 @@ public class HostPane extends JPanel {
         });
         saveBtn.setBounds(270, 69, 117, 25);
         add(saveBtn);
+
+        JButton btnhost = new JButton("添加Host");
+        btnhost.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                HostInputDialog input = new HostInputDialog();
+                input.setModal(true);
+                input.setLocationRelativeTo(HostPane.this);
+                input.setVisible(true);
+                if (input.isOk()) {
+                    if (hosts.getHost(input.getDomain()) != null) {
+                        JOptionPane.showMessageDialog(null, "域名" + input.getDomain() + "已存在");
+                        return;
+                    }
+                    hosts.setHost(new Host(input.getIp(), input.getDomain()));
+                    refreshTable();
+                }
+            }
+        });
+        btnhost.setBounds(399, 69, 117, 25);
+        add(btnhost);
+    }
+
+    private void refreshTable() {
+        // 填入jtable
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        // 清除以前的
+        model.getDataVector().removeAllElements();
+        // 加入新的
+        for (Host host : hosts.getHostList()) {
+            model.addRow(new Object[] { host.getDomain(), null, host.getIp(), host.getIp() });
+        }
     }
 }

@@ -9,9 +9,6 @@ public class HostTableModel extends DefaultTableModel {
 
     @Override
     public boolean isCellEditable(int row, int column) {
-        if(column == 2){
-            return true;
-        }
         return false;
     }
 
