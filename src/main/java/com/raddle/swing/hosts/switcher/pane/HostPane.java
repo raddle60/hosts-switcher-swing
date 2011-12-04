@@ -120,7 +120,7 @@ public class HostPane extends JPanel {
 
             }
         });
-        importBtn.setBounds(417, 34, 117, 25);
+        importBtn.setBounds(417, 34, 72, 25);
         add(importBtn);
 
         JButton previewBtn = new JButton("预览");
@@ -142,7 +142,7 @@ public class HostPane extends JPanel {
                 }
             }
         });
-        previewBtn.setBounds(12, 69, 117, 25);
+        previewBtn.setBounds(12, 69, 60, 25);
         add(previewBtn);
 
         JButton exportBtn = new JButton("导出");
@@ -167,7 +167,7 @@ public class HostPane extends JPanel {
                 }
             }
         });
-        exportBtn.setBounds(141, 69, 117, 25);
+        exportBtn.setBounds(503, 34, 72, 25);
         add(exportBtn);
         table.getTableHeader().setReorderingAllowed(false);
         DefaultTableModel model = new HostTableModel();
@@ -199,11 +199,11 @@ public class HostPane extends JPanel {
                 }
             }
         });
-        saveBtn.setBounds(270, 69, 117, 25);
+        saveBtn.setBounds(84, 69, 60, 25);
         add(saveBtn);
 
-        JButton btnhost = new JButton("添加Host");
-        btnhost.addActionListener(new ActionListener() {
+        JButton addBtn = new JButton("添加");
+        addBtn.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -221,8 +221,51 @@ public class HostPane extends JPanel {
                 }
             }
         });
-        btnhost.setBounds(399, 69, 117, 25);
-        add(btnhost);
+        addBtn.setBounds(159, 69, 65, 25);
+        add(addBtn);
+
+        JButton editBtn = new JButton("编辑");
+        editBtn.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (table.getSelectedRow() != -1) {
+                    HostWrapper wrapper = (HostWrapper) table.getValueAt(table.getSelectedRow(), 0);
+                    HostEditDialog edit = new HostEditDialog();
+                    edit.setDomain(wrapper.getDomain());
+                    edit.setOldIp(wrapper.getIp());
+                    edit.setModal(true);
+                    edit.setLocationRelativeTo(HostPane.this);
+                    edit.setVisible(true);
+                    if (edit.isOk()) {
+                        hosts.getHost(edit.getDomain()).setIp(edit.getNewIp());
+                        if (edit.isEditSameIp()) {
+                            // 修改所有相同的ip
+                            for (Host host : hosts.getHostList()) {
+                                if (StringUtils.equals(edit.getOldIp(), host.getIp())) {
+                                    host.setIp(edit.getNewIp());
+                                }
+                            }
+                        }
+                        refreshTable();
+                    }
+                }
+            }
+        });
+        editBtn.setBounds(236, 69, 60, 25);
+        add(editBtn);
+
+        JButton delBtn = new JButton("删除");
+        delBtn.setBounds(308, 69, 60, 25);
+        add(delBtn);
+
+        JButton deactiveBtn = new JButton("禁用");
+        deactiveBtn.setBounds(382, 69, 60, 25);
+        add(deactiveBtn);
+
+        JButton activeBtn = new JButton("启用");
+        activeBtn.setBounds(458, 69, 60, 25);
+        add(activeBtn);
     }
 
     private void refreshTable() {
@@ -232,7 +275,8 @@ public class HostPane extends JPanel {
         model.getDataVector().removeAllElements();
         // 加入新的
         for (Host host : hosts.getHostList()) {
-            model.addRow(new Object[] { host.getDomain(), null, host.getIp(), host.getIp() });
+            HostWrapper wrapper = new HostWrapper(hostsManager, hosts, host);
+            model.addRow(new Object[] { wrapper, wrapper.getInheritIp(), wrapper.getIp(), wrapper.getFinalIp() });
         }
     }
 }
