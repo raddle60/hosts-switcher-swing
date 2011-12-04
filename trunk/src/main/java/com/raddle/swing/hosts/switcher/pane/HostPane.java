@@ -6,6 +6,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.List;
 import java.util.UUID;
 
@@ -133,6 +134,27 @@ public class HostPane extends JPanel {
         add(previewBtn);
 
         JButton exportBtn = new JButton("导出");
+        exportBtn.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (StringUtils.isBlank(hosts.getEnv())) {
+                    JOptionPane.showMessageDialog(null, "环境名称不能为空");
+                    return;
+                }
+                File saveFile = FileSelectUtils.selectSaveFile(importTxt.getText(), null);
+                if (saveFile.getParentFile().exists()) {
+                    try {
+                        hostsManager.writeHosts(hosts, new FileWriter(saveFile));
+                        JOptionPane.showMessageDialog(null, "导出成功\n" + saveFile.getAbsolutePath());
+                    } catch (Exception e1) {
+                        JOptionPane.showMessageDialog(null, "导出失败," + e1.getMessage());
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "目录:" + saveFile.getParentFile().getAbsoluteFile() + ", 不存在");
+                }
+            }
+        });
         exportBtn.setBounds(141, 69, 117, 25);
         add(exportBtn);
         table.getTableHeader().setReorderingAllowed(false);
