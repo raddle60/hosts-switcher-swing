@@ -20,6 +20,7 @@ import com.raddle.swing.hosts.switcher.manager.HostsManager;
 import com.raddle.swing.hosts.switcher.model.Host;
 import com.raddle.swing.hosts.switcher.model.Hosts;
 import com.raddle.swing.hosts.switcher.utils.FileSelectUtils;
+import com.raddle.swing.layout.LayoutUtils;
 
 public class HostPane extends JPanel {
 
@@ -108,6 +109,7 @@ public class HostPane extends JPanel {
         model.addColumn("覆盖");
         model.addColumn("最终");
         table.setModel(model);
+        LayoutUtils.anchorFixedBorder(this, scrollPane).anchorRight(10).anchorBottom(10);
     }
 
 }
