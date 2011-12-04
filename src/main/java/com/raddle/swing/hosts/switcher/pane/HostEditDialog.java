@@ -24,6 +24,7 @@ public class HostEditDialog extends JDialog {
     private JTextField ipTxt;
     private String oldIp;
     private JLabel domainLeb;
+    private JLabel oldIpLeb;
     private JCheckBox allIpChk;
 
     /**
@@ -43,7 +44,7 @@ public class HostEditDialog extends JDialog {
      * Create the dialog.
      */
     public HostEditDialog(){
-        setBounds(100, 100, 408, 182);
+        setBounds(100, 100, 408, 247);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -60,19 +61,29 @@ public class HostEditDialog extends JDialog {
         }
         {
             JLabel lblIp = new JLabel("IP");
-            lblIp.setBounds(12, 39, 70, 15);
+            lblIp.setBounds(12, 70, 70, 15);
             contentPanel.add(lblIp);
         }
         {
             ipTxt = new JTextField();
-            ipTxt.setBounds(94, 39, 272, 25);
+            ipTxt.setBounds(94, 70, 272, 25);
             contentPanel.add(ipTxt);
             ipTxt.setColumns(10);
         }
 
-        allIpChk = new JCheckBox("是否修改所有相同IP域名");
-        allIpChk.setBounds(94, 72, 272, 23);
+        allIpChk = new JCheckBox("修改所有相同IP");
+        allIpChk.setBounds(94, 129, 272, 23);
         contentPanel.add(allIpChk);
+        {
+            JLabel lblip = new JLabel("原IP");
+            lblip.setBounds(12, 43, 70, 15);
+            contentPanel.add(lblip);
+        }
+        {
+            oldIpLeb = new JLabel("");
+            oldIpLeb.setBounds(94, 43, 272, 15);
+            contentPanel.add(oldIpLeb);
+        }
         {
             JPanel buttonPane = new JPanel();
             buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -137,6 +148,7 @@ public class HostEditDialog extends JDialog {
     public void setOldIp(String oldIp) {
         this.oldIp = oldIp;
         ipTxt.setText(oldIp);
+        oldIpLeb.setText(oldIp);
     }
 
     public String getNewIp() {
