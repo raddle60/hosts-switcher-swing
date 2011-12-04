@@ -85,7 +85,7 @@ public class HostsManager {
         PrintWriter bw = new PrintWriter(writer);
         // 输入注释
         bw.println("######generate by raddle hosts manager " + DateFormatUtils.format(new Date(), "yyyy/M/d H:m:s") + "######");
-        bw.println("######" + StringUtils.defaultString(hosts.getEnv()) + "######");
+        bw.println("######env:" + StringUtils.defaultString(hosts.getEnv()) + "######");
         for (String ip : hostMap.keySet()) {
             List<String> domainList = new ArrayList<String>(hostMap.get(ip));
             Collections.sort(domainList);
