@@ -19,37 +19,36 @@ import com.raddle.swing.hosts.switcher.model.Hosts;
  */
 public class Db4oDao {
 
-    private String dbfile = "hosts.db4o";
+    private static String dbfile = "hosts.db4o";
+    private static ObjectContainer db;
 
-    public Db4oDao(){
+    synchronized public static void init() {
+        if (db == null) {
+            db = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), dbfile);
+        }
     }
 
-    public Db4oDao(String dbfile){
-        this.dbfile = dbfile;
+    synchronized public static void close() {
+        if (db != null) {
+            db.close();
+        }
+    }
+
+    public Db4oDao(){
     }
 
     synchronized public Hosts getHosts(String id) {
         if (StringUtils.isEmpty(id)) {
             throw new IllegalArgumentException("id is empty");
         }
-        ObjectContainer db = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), dbfile);
-        try {
-            Hosts qh = new Hosts();
-            qh.setId(id);
-            return queryHosts(db, qh);
-        } finally {
-            db.close();
-        }
+        Hosts qh = new Hosts();
+        qh.setId(id);
+        return queryHosts(db, qh);
     }
 
     synchronized public List<Hosts> getAllHosts() {
         if (new File(dbfile).exists()) {
-            ObjectContainer db = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), dbfile);
-            try {
-                return retrieveAllFromObjectSet(db.queryByExample(Hosts.class), Hosts.class);
-            } finally {
-                db.close();
-            }
+            return retrieveAllFromObjectSet(db.queryByExample(Hosts.class), Hosts.class);
         }
         return null;
     }
@@ -61,24 +60,21 @@ public class Db4oDao {
         if (StringUtils.isEmpty(hosts.getEnv())) {
             throw new IllegalArgumentException("env is empty");
         }
-        ObjectContainer db = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), dbfile);
-        try {
-            Hosts qh = new Hosts();
-            qh.setId(hosts.getId());
-            Hosts existHost = queryHosts(db, qh);
-            if (existHost != null) {
-                existHost.removeAll();
-                existHost.setEnv(hosts.getEnv());
-                existHost.setParentId(hosts.getParentId());
-                for (Host host : hosts.getHostList()) {
-                    existHost.setHost(host);
-                }
-                db.store(existHost);
-            } else {
-                db.store(hosts);
+        Hosts qh = new Hosts();
+        qh.setId(hosts.getId());
+        Hosts existHost = queryHosts(db, qh);
+        if (existHost != null) {
+            existHost.removeAll();
+            existHost.setEnv(hosts.getEnv());
+            existHost.setParentId(hosts.getParentId());
+            for (Host host : hosts.getHostList()) {
+                existHost.setHost(host);
             }
-        } finally {
-            db.close();
+            db.store(existHost);
+            db.commit();
+        } else {
+            db.store(hosts);
+            db.commit();
         }
     }
 
@@ -86,15 +82,11 @@ public class Db4oDao {
         if (StringUtils.isEmpty(id)) {
             throw new IllegalArgumentException("id is empty");
         }
-        ObjectContainer db = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), dbfile);
-        try {
-            Hosts qh = new Hosts();
-            qh.setId(id);
-            Hosts existHost = queryHosts(db, qh);
-            db.delete(existHost);
-        } finally {
-            db.close();
-        }
+        Hosts qh = new Hosts();
+        qh.setId(id);
+        Hosts existHost = queryHosts(db, qh);
+        db.delete(existHost);
+        db.commit();
     }
 
     private Hosts queryHosts(ObjectContainer db, Hosts hosts) {

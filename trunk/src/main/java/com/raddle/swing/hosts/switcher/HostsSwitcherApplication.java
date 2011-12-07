@@ -20,6 +20,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import com.raddle.swing.hosts.switcher.dao.Db4oDao;
 import com.raddle.swing.hosts.switcher.pane.HostPane;
 
 public class HostsSwitcherApplication {
@@ -49,7 +50,7 @@ public class HostsSwitcherApplication {
 
     /**
      * This method initializes jFrame
-     *
+     * 
      * @return javax.swing.JFrame
      */
     private JFrame getJFrame() {
@@ -70,7 +71,7 @@ public class HostsSwitcherApplication {
 
     /**
      * This method initializes jContentPane
-     *
+     * 
      * @return javax.swing.JPanel
      */
     private JPanel getJContentPane() {
@@ -82,7 +83,7 @@ public class HostsSwitcherApplication {
 
     /**
      * This method initializes jJMenuBar
-     *
+     * 
      * @return javax.swing.JMenuBar
      */
     private JMenuBar getJJMenuBar() {
@@ -97,7 +98,7 @@ public class HostsSwitcherApplication {
 
     /**
      * This method initializes jMenu
-     *
+     * 
      * @return javax.swing.JMenu
      */
     private JMenu getFileMenu() {
@@ -112,7 +113,7 @@ public class HostsSwitcherApplication {
 
     /**
      * This method initializes jMenu
-     *
+     * 
      * @return javax.swing.JMenu
      */
     private JMenu getEditMenu() {
@@ -128,7 +129,7 @@ public class HostsSwitcherApplication {
 
     /**
      * This method initializes jMenu
-     *
+     * 
      * @return javax.swing.JMenu
      */
     private JMenu getHelpMenu() {
@@ -142,7 +143,7 @@ public class HostsSwitcherApplication {
 
     /**
      * This method initializes jMenuItem
-     *
+     * 
      * @return javax.swing.JMenuItem
      */
     private JMenuItem getExitMenuItem() {
@@ -162,7 +163,7 @@ public class HostsSwitcherApplication {
 
     /**
      * This method initializes jMenuItem
-     *
+     * 
      * @return javax.swing.JMenuItem
      */
     private JMenuItem getAboutMenuItem() {
@@ -187,7 +188,7 @@ public class HostsSwitcherApplication {
 
     /**
      * This method initializes aboutDialog
-     *
+     * 
      * @return javax.swing.JDialog
      */
     private JDialog getAboutDialog() {
@@ -201,7 +202,7 @@ public class HostsSwitcherApplication {
 
     /**
      * This method initializes aboutContentPane
-     *
+     * 
      * @return javax.swing.JPanel
      */
     private JPanel getAboutContentPane() {
@@ -215,7 +216,7 @@ public class HostsSwitcherApplication {
 
     /**
      * This method initializes aboutVersionLabel
-     *
+     * 
      * @return javax.swing.JLabel
      */
     private JLabel getAboutVersionLabel() {
@@ -229,7 +230,7 @@ public class HostsSwitcherApplication {
 
     /**
      * This method initializes jMenuItem
-     *
+     * 
      * @return javax.swing.JMenuItem
      */
     private JMenuItem getCutMenuItem() {
@@ -243,7 +244,7 @@ public class HostsSwitcherApplication {
 
     /**
      * This method initializes jMenuItem
-     *
+     * 
      * @return javax.swing.JMenuItem
      */
     private JMenuItem getCopyMenuItem() {
@@ -257,7 +258,7 @@ public class HostsSwitcherApplication {
 
     /**
      * This method initializes jMenuItem
-     *
+     * 
      * @return javax.swing.JMenuItem
      */
     private JMenuItem getPasteMenuItem() {
@@ -271,7 +272,7 @@ public class HostsSwitcherApplication {
 
     /**
      * This method initializes jMenuItem
-     *
+     * 
      * @return javax.swing.JMenuItem
      */
     private JMenuItem getSaveMenuItem() {
@@ -287,14 +288,22 @@ public class HostsSwitcherApplication {
      * Launches this application
      */
     public static void main(String[] args) {
+        Db4oDao.init();
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override
             public void run() {
                 HostsSwitcherApplication application = new HostsSwitcherApplication();
                 application.getJFrame().setVisible(true);
+
+            }
+        });
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+
+            @Override
+            public void run() {
+                Db4oDao.close();
             }
         });
     }
-
 }
