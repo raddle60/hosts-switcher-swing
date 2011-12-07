@@ -119,16 +119,20 @@ public class HostsManager {
     }
 
     private boolean isCycle(Set<String> parents, String parentId) {
-        if (parents.contains(parentId)) {
-            return true;
-        } else {
-            Hosts parent = db4oDao.getHosts(parentId);
-            if (parent != null) {
-                return isCycle(parents, parent.getId());
+        if (StringUtils.isNotEmpty(parentId)) {
+            if (parents.contains(parentId)) {
+                return true;
             } else {
-                return false;
+                parents.add(parentId);
+                Hosts parent = db4oDao.getHosts(parentId);
+                if (parent != null) {
+                    return isCycle(parents, parent.getId());
+                } else {
+                    return false;
+                }
             }
         }
+        return false;
     }
 
     public Hosts getHosts(String id) {
