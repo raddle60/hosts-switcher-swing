@@ -15,6 +15,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import com.raddle.swing.hosts.switcher.manager.HostsManager;
 import com.raddle.swing.hosts.switcher.model.Host;
 import com.raddle.swing.hosts.switcher.model.Hosts;
+import com.raddle.swing.hosts.switcher.sort.HostDomainComparator;
 import com.raddle.swing.hosts.switcher.utils.FileSelectUtils;
 import com.raddle.swing.layout.LayoutUtils;
 
@@ -345,10 +347,12 @@ public class HostPane extends JPanel {
                 }
             }
         }
+        Collections.sort(allHost, new HostDomainComparator());
         for (Host host : allHost) {
             HostWrapper wrapper = new HostWrapper(hostsManager, hosts, hosts.getHost(host.getDomain()) == null ? null : host, host.getDomain());
             model.addRow(new Object[] { wrapper, wrapper.getInheritIp(), wrapper.getIp(), wrapper.getFinalIp() });
         }
+        table.repaint();
     }
 
     private void editDomain() {
