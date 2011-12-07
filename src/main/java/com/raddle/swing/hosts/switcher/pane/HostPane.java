@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -14,7 +16,6 @@ import java.io.FileWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.swing.DefaultComboBoxModel;
@@ -72,12 +73,23 @@ public class HostPane extends JPanel {
         label_1.setBounds(230, 12, 60, 15);
         add(label_1);
 
-        JComboBox inheritComb = new JComboBox();
+        final JComboBox<HostsItem> inheritComb = new JComboBox<HostsItem>();
+        inheritComb.addItemListener(new ItemListener() {
+
+            @Override
+            public void itemStateChanged(ItemEvent event) {
+                if (event.getStateChange() == ItemEvent.SELECTED) {
+                    HostsItem item = (HostsItem) inheritComb.getSelectedItem();
+                    hosts.setParentId(item.getHostsId());
+                    refreshTable();
+                }
+            }
+        });
         inheritComb.setBounds(297, 5, 108, 28);
         add(inheritComb);
         // 初始化下拉框
         List<Hosts> allHosts = hostsManager.getAllHosts();
-        DefaultComboBoxModel hostsModel = (DefaultComboBoxModel) inheritComb.getModel();
+        DefaultComboBoxModel<HostsItem> hostsModel = (DefaultComboBoxModel<HostsItem>) inheritComb.getModel();
         hostsModel.removeAllElements();
         hostsModel.addElement(null);
         for (Hosts hosts : allHosts) {
@@ -274,7 +286,13 @@ public class HostPane extends JPanel {
                 if (selectedRows.length > 0) {
                     for (int row : selectedRows) {
                         HostWrapper wrapper = (HostWrapper) table.getValueAt(row, 0);
-                        hosts.getHost(wrapper.getDomain()).setActive(false);
+                        if (hosts.getHost(wrapper.getDomain()) == null) {
+                            Host host = new Host(null, wrapper.getDomain());
+                            host.setActive(false);
+                            hosts.setHost(host);
+                        } else {
+                            hosts.getHost(wrapper.getDomain()).setActive(false);
+                        }
                     }
                     refreshTable();
                 } else {
@@ -294,7 +312,12 @@ public class HostPane extends JPanel {
                 if (selectedRows.length > 0) {
                     for (int row : selectedRows) {
                         HostWrapper wrapper = (HostWrapper) table.getValueAt(row, 0);
-                        hosts.getHost(wrapper.getDomain()).setActive(true);
+                        if (hosts.getHost(wrapper.getDomain()) == null) {
+                            Host host = new Host(wrapper.getInheritIp(), wrapper.getDomain());
+                            hosts.setHost(host);
+                        } else {
+                            hosts.getHost(wrapper.getDomain()).setActive(true);
+                        }
                     }
                     refreshTable();
                 } else {
@@ -338,7 +361,11 @@ public class HostPane extends JPanel {
             edit.setLocationRelativeTo(HostPane.this);
             edit.setVisible(true);
             if (edit.isOk()) {
-                hosts.getHost(edit.getDomain()).setIp(edit.getNewIp());
+                if (hosts.getHost(edit.getDomain()) == null) {
+                    hosts.setHost(new Host(edit.getNewIp(), edit.getDomain()));
+                } else {
+                    hosts.getHost(edit.getDomain()).setIp(edit.getNewIp());
+                }
                 if (edit.isEditSameIp()) {
                     // 修改所有相同的ip
                     for (Host host : hosts.getHostList()) {

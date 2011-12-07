@@ -59,11 +59,12 @@ public class HostWrapper {
 
     public String getFinalIp() {
         if (isActive()) {
+            // 自己的
             return host.getIp();
         } else {
             if (isExist()) {
-                // 自己的
-                return host.getIp();
+                // 禁用的直接返回空
+                return null;
             } else {
                 // 继承的
                 return getInheritIp();
@@ -81,6 +82,6 @@ public class HostWrapper {
 
     @Override
     public String toString() {
-        return host.getDomain();
+        return domain;
     }
 }
