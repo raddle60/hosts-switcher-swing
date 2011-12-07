@@ -24,8 +24,8 @@ import com.raddle.swing.hosts.switcher.model.Hosts;
 
 /**
  * 功能描述：
- * @author xurong
- * time : 2011-11-23 下午03:52:37
+ * 
+ * @author xurong time : 2011-11-23 下午03:52:37
  */
 public class HostsManager {
 
@@ -34,6 +34,7 @@ public class HostsManager {
 
     /**
      * 从文件解析hosts
+     * 
      * @param reader
      * @return
      */
@@ -107,5 +108,9 @@ public class HostsManager {
 
     public void saveHosts(Hosts hosts) {
         db4oDao.saveHosts(hosts);
+    }
+
+    public Hosts getHosts(String id) {
+        return db4oDao.getHosts(id);
     }
 }

@@ -312,7 +312,7 @@ public class HostPane extends JPanel {
         model.getDataVector().removeAllElements();
         // 加入新的
         for (Host host : hosts.getHostList()) {
-            HostWrapper wrapper = new HostWrapper(hostsManager, hosts, host);
+            HostWrapper wrapper = new HostWrapper(hostsManager, hosts, host, host.getDomain());
             model.addRow(new Object[] { wrapper, wrapper.getInheritIp(), wrapper.getIp(), wrapper.getFinalIp() });
         }
     }
