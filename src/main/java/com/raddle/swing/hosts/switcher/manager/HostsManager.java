@@ -138,4 +138,23 @@ public class HostsManager {
     public Hosts getHosts(String id) {
         return db4oDao.getHosts(id);
     }
+
+    public Map<String, Host> getAllInheritHost(String parentId) {
+        Map<String, Host> existsHost = new HashMap<String, Host>();
+        Hosts parent = db4oDao.getHosts(parentId);
+        if (parent != null) {
+            for (Host host : parent.getHostList()) {
+                existsHost.put(host.getDomain(), host);
+            }
+            if (StringUtils.isNotEmpty(parent.getParentId())) {
+                Map<String, Host> parentHosts = getAllInheritHost(parent.getParentId());
+                for (String domain : parentHosts.keySet()) {
+                    if (!existsHost.containsKey(domain)) {
+                        existsHost.put(domain, parentHosts.get(domain));
+                    }
+                }
+            }
+        }
+        return existsHost;
+    }
 }

@@ -12,7 +12,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.swing.DefaultComboBoxModel;
@@ -311,8 +313,17 @@ public class HostPane extends JPanel {
         // 清除以前的
         model.getDataVector().removeAllElements();
         // 加入新的
-        for (Host host : hosts.getHostList()) {
-            HostWrapper wrapper = new HostWrapper(hostsManager, hosts, host, host.getDomain());
+        List<Host> allHost = new ArrayList<Host>();
+        allHost.addAll(hosts.getHostList());
+        if (StringUtils.isNotEmpty(hosts.getParentId())) {
+            for (Host host : hostsManager.getAllInheritHost(hosts.getParentId()).values()) {
+                if (hosts.getHost(host.getDomain()) == null) {
+                    allHost.add(host);
+                }
+            }
+        }
+        for (Host host : allHost) {
+            HostWrapper wrapper = new HostWrapper(hostsManager, hosts, hosts.getHost(host.getDomain()) == null ? null : host, host.getDomain());
             model.addRow(new Object[] { wrapper, wrapper.getInheritIp(), wrapper.getIp(), wrapper.getFinalIp() });
         }
     }
