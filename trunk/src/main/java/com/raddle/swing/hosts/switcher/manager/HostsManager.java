@@ -107,7 +107,28 @@ public class HostsManager {
     }
 
     public void saveHosts(Hosts hosts) {
+        // 检查是否循环依赖
+        Set<String> exists = new HashSet<String>();
+        if (StringUtils.isNotEmpty(hosts.getId())) {
+            exists.add(hosts.getId());
+        }
+        if (isCycle(exists, hosts.getParentId())) {
+            throw new IllegalStateException("循环依赖");
+        }
         db4oDao.saveHosts(hosts);
+    }
+
+    private boolean isCycle(Set<String> parents, String parentId) {
+        if (parents.contains(parentId)) {
+            return true;
+        } else {
+            Hosts parent = db4oDao.getHosts(parentId);
+            if (parent != null) {
+                return isCycle(parents, parent.getId());
+            } else {
+                return false;
+            }
+        }
     }
 
     public Hosts getHosts(String id) {

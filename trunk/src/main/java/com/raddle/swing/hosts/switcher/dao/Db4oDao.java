@@ -9,12 +9,13 @@ import org.apache.commons.lang.StringUtils;
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
+import com.raddle.swing.hosts.switcher.model.Host;
 import com.raddle.swing.hosts.switcher.model.Hosts;
 
 /**
  * 功能描述：
- * @author xurong
- * time : 2011-11-23 下午06:14:44
+ * 
+ * @author xurong time : 2011-11-23 下午06:14:44
  */
 public class Db4oDao {
 
@@ -66,9 +67,16 @@ public class Db4oDao {
             qh.setId(hosts.getId());
             Hosts existHost = queryHosts(db, qh);
             if (existHost != null) {
-                db.delete(existHost);
+                existHost.removeAll();
+                existHost.setEnv(hosts.getEnv());
+                existHost.setParentId(hosts.getParentId());
+                for (Host host : hosts.getHostList()) {
+                    existHost.setHost(host);
+                }
+                db.store(existHost);
+            } else {
+                db.store(hosts);
             }
-            db.store(hosts);
         } finally {
             db.close();
         }
