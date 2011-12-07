@@ -11,16 +11,16 @@ import com.raddle.swing.hosts.switcher.sort.DomainRevertComparator;
 
 /**
  * 功能描述：
- * @author xurong
- * time : 2011-11-23 下午03:52:08
+ * 
+ * @author xurong time : 2011-11-23 下午03:52:08
  */
 public class Hosts implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private String            id;
-    private String            env;
-    private String            parentId;
-    private Map<String, Host> hostMap          = new HashMap<String, Host>();
+    private String id;
+    private String env;
+    private String parentId;
+    private Map<String, Host> hostMap = new HashMap<String, Host>();
 
     public Host getHost(String domain) {
         return hostMap.get(domain);
@@ -32,6 +32,10 @@ public class Hosts implements Serializable {
 
     public void removeHost(String domain) {
         hostMap.remove(domain);
+    }
+
+    public void removeAll() {
+        hostMap.clear();
     }
 
     public List<Host> getHostList() {
