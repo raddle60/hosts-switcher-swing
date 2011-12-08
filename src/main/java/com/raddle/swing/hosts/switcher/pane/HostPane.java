@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -287,11 +288,13 @@ public class HostPane extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 int[] selectedRows = table.getSelectedRows();
                 if (selectedRows.length > 0) {
-                    for (int row : selectedRows) {
-                        HostWrapper wrapper = (HostWrapper) table.getValueAt(row, 0);
-                        hosts.removeHost(wrapper.getDomain());
+                    if (JOptionPane.showConfirmDialog(null, "确定要删除选中的Host吗?") == JOptionPane.OK_OPTION) {
+                        for (int row : selectedRows) {
+                            HostWrapper wrapper = (HostWrapper) table.getValueAt(row, 0);
+                            hosts.removeHost(wrapper.getDomain());
+                        }
+                        refreshTable();
                     }
-                    refreshTable();
                 } else {
                     JOptionPane.showMessageDialog(null, "请选择域名");
                 }
@@ -350,6 +353,33 @@ public class HostPane extends JPanel {
         });
         activeBtn.setBounds(458, 69, 60, 25);
         add(activeBtn);
+
+        JButton pasteImportBtn = new JButton("粘帖文本导入");
+        pasteImportBtn.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                TextImportDialog textDialog = new TextImportDialog();
+                textDialog.setModal(true);
+                textDialog.setLocationRelativeTo(HostPane.this);
+                textDialog.setVisible(true);
+                if (textDialog.isOk() && StringUtils.isNotBlank(textDialog.getInputText())) {
+                    try {
+                        Hosts importHosts = hostsManager.parseHosts(new StringReader(textDialog.getInputText()));
+                        // 合并到已有的host
+                        for (Host host : importHosts.getHostList()) {
+                            hosts.setHost(host);
+                        }
+                        refreshTable();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                        JOptionPane.showMessageDialog(null, e1.getMessage());
+                    }
+                }
+            }
+        });
+        pasteImportBtn.setBounds(416, 5, 156, 23);
+        add(pasteImportBtn);
     }
 
     public void refreshTable() {
