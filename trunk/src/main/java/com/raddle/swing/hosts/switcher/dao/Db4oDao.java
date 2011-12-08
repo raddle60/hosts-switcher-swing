@@ -31,6 +31,7 @@ public class Db4oDao {
     synchronized public static void close() {
         if (db != null) {
             db.close();
+            db = null;
         }
     }
 
@@ -64,13 +65,15 @@ public class Db4oDao {
         qh.setId(hosts.getId());
         Hosts existHost = queryHosts(db, qh);
         if (existHost != null) {
-            existHost.removeAll();
-            existHost.setEnv(hosts.getEnv());
-            existHost.setParentId(hosts.getParentId());
+            Hosts update = existHost.clone();
+            update.removeAll();
+            update.setEnv(hosts.getEnv());
+            update.setParentId(hosts.getParentId());
             for (Host host : hosts.getHostList()) {
-                existHost.setHost(host);
+                update.setHost(host);
             }
-            db.store(existHost);
+            db.delete(existHost);
+            db.store(update);
             db.commit();
         } else {
             db.store(hosts);
