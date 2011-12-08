@@ -41,8 +41,8 @@ public class HostWrapper {
     }
 
     private String getInheritIp(Hosts self) {
-        if (StringUtils.isNotEmpty(hosts.getParentId())) {
-            Hosts parent = hostsManager.getHosts(hosts.getParentId());
+        if (StringUtils.isNotEmpty(self.getParentId())) {
+            Hosts parent = hostsManager.getHosts(self.getParentId());
             if (parent != null) {
                 Host inheritHost = parent.getHost(domain);
                 if (inheritHost != null) {
