@@ -46,6 +46,7 @@ public class HostPane extends JPanel {
     private JTextField envTxt;
     private JTable table;
     private JTextField importTxt;
+    private JComboBox<HostsItem> inheritComb;
     private HostsManager hostsManager = new HostsManager();
     private Hosts hosts = new Hosts();
 
@@ -75,7 +76,7 @@ public class HostPane extends JPanel {
         label_1.setBounds(230, 12, 60, 15);
         add(label_1);
 
-        final JComboBox<HostsItem> inheritComb = new JComboBox<HostsItem>();
+        inheritComb = new JComboBox<HostsItem>();
         inheritComb.addItemListener(new ItemListener() {
 
             @Override
@@ -418,5 +419,17 @@ public class HostPane extends JPanel {
 
     public void setHosts(Hosts hosts) {
         this.hosts = hosts;
+    }
+
+    public void init() {
+        envTxt.setText(hosts.getEnv());
+        for (int i = 0; i < inheritComb.getModel().getSize(); i++) {
+            HostsItem hostsItem = inheritComb.getModel().getElementAt(i);
+            if (hostsItem != null && StringUtils.equals(hosts.getParentId(), hostsItem.getHostsId())) {
+                inheritComb.setSelectedIndex(i);
+                break;
+            }
+        }
+        refreshTable();
     }
 }
