@@ -52,6 +52,7 @@ public class HostPane extends JPanel {
     private JComboBox<HostsItem> inheritComb;
     private HostsManager hostsManager = new HostsManager();
     private Hosts hosts = new Hosts();
+    private boolean initComb = false;
 
     /**
      * Create the panel.
@@ -84,7 +85,7 @@ public class HostPane extends JPanel {
 
             @Override
             public void itemStateChanged(ItemEvent event) {
-                if (event.getStateChange() == ItemEvent.SELECTED) {
+                if (event.getStateChange() == ItemEvent.SELECTED && !initComb) {
                     HostsItem item = (HostsItem) inheritComb.getSelectedItem();
                     Set<String> exists = new HashSet<String>();
                     if (StringUtils.isNotEmpty(hosts.getId())) {
@@ -96,29 +97,18 @@ public class HostPane extends JPanel {
                     } else {
                         for (int i = 0; i < inheritComb.getModel().getSize(); i++) {
                             HostsItem hostsItem = inheritComb.getModel().getElementAt(i);
-                            if ((hostsItem == null && hosts.getParentId() == null) || hostsItem != null && StringUtils.equals(hosts.getParentId(), hostsItem.getHostsId())) {
+                            if (hostsItem != null && StringUtils.equals(hosts.getParentId(), hostsItem.getHostsId())) {
                                 inheritComb.setSelectedIndex(i);
                                 break;
                             }
                         }
                         JOptionPane.showMessageDialog(null, "循环依赖");
                     }
-                } else if (inheritComb.getSelectedItem() == null && hosts.getParentId() != null) {
-                    hosts.setParentId(null);
-                    refreshTable();
                 }
             }
         });
         inheritComb.setBounds(297, 5, 108, 28);
         add(inheritComb);
-        // 初始化下拉框
-        List<Hosts> allHosts = hostsManager.getAllHosts();
-        DefaultComboBoxModel<HostsItem> hostsModel = (DefaultComboBoxModel<HostsItem>) inheritComb.getModel();
-        hostsModel.removeAllElements();
-        hostsModel.addElement(null);
-        for (Hosts hosts : allHosts) {
-            hostsModel.addElement(new HostsItem(hosts.getId(), hosts.getEnv()));
-        }
 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBounds(12, 106, 629, 396);
@@ -378,8 +368,21 @@ public class HostPane extends JPanel {
                 }
             }
         });
-        pasteImportBtn.setBounds(416, 5, 156, 23);
+        pasteImportBtn.setBounds(415, 4, 160, 28);
         add(pasteImportBtn);
+
+        JButton refreshBtn = new JButton("刷新");
+        refreshBtn.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (JOptionPane.showConfirmDialog(null, "您确定要刷新吗？所有未保存信息将丢失") == JOptionPane.OK_OPTION) {
+                    init();
+                }
+            }
+        });
+        refreshBtn.setBounds(521, 71, 60, 25);
+        add(refreshBtn);
     }
 
     public void refreshTable() {
@@ -468,11 +471,30 @@ public class HostPane extends JPanel {
     }
 
     public void setHosts(Hosts hosts) {
-        this.hosts = hosts;
+        this.hosts = hosts.clone();
     }
 
     public void init() {
+        Hosts h = hostsManager.getHosts(hosts.getId());
+        hosts = h.clone();
         envTxt.setText(hosts.getEnv());
+        refreshComb();
+        refreshTable();
+    }
+
+    synchronized private void refreshComb() {
+        try {
+            initComb = true;
+            List<Hosts> allHosts = hostsManager.getAllHosts();
+            DefaultComboBoxModel<HostsItem> hostsModel = (DefaultComboBoxModel<HostsItem>) inheritComb.getModel();
+            hostsModel.removeAllElements();
+            hostsModel.addElement(new HostsItem(null, null));
+            for (Hosts hosts : allHosts) {
+                hostsModel.addElement(new HostsItem(hosts.getId(), hosts.getEnv()));
+            }
+        } finally {
+            initComb = false;
+        }
         for (int i = 0; i < inheritComb.getModel().getSize(); i++) {
             HostsItem hostsItem = inheritComb.getModel().getElementAt(i);
             if (hostsItem != null && StringUtils.equals(hosts.getParentId(), hostsItem.getHostsId())) {
@@ -480,6 +502,6 @@ public class HostPane extends JPanel {
                 break;
             }
         }
-        refreshTable();
+
     }
 }
