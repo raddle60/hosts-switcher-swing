@@ -6,6 +6,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +30,7 @@ import com.raddle.swing.hosts.switcher.dao.Db4oDao;
 import com.raddle.swing.hosts.switcher.manager.HostsManager;
 import com.raddle.swing.hosts.switcher.model.Hosts;
 import com.raddle.swing.hosts.switcher.pane.HostPane;
+import com.raddle.swing.hosts.switcher.sort.HostsComparator;
 
 public class HostsSwitcherApplication {
 
@@ -72,10 +74,11 @@ public class HostsSwitcherApplication {
             jFrame.setLocation((int) (width - jFrame.getWidth()) / 2, (int) (height - jFrame.getHeight()) / 2);
             // 初始化
             List<Hosts> allHosts = hostsManager.getAllHosts();
+            Collections.sort(allHosts, new HostsComparator());
             for (Hosts hosts : allHosts) {
                 HostPane hostPane = new HostPane();
                 hostPane.setHosts(hosts);
-                hostPane.refreshTable();
+                hostPane.init();
                 tabbedPane.add(hosts.getEnv(), hostPane);
             }
         }
@@ -246,7 +249,7 @@ public class HostsSwitcherApplication {
                         hostsManager.saveHosts(hosts);
                         HostPane hostPane = new HostPane();
                         hostPane.setHosts(hosts);
-                        hostPane.refreshTable();
+                        hostPane.init();
                         tabbedPane.add(hosts.getEnv(), hostPane);
                     }
                 }
