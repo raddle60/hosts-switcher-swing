@@ -48,6 +48,20 @@ public class Hosts implements Serializable {
         return hostList;
     }
 
+    @Override
+    public Hosts clone() {
+        Hosts hs = new Hosts();
+        hs.setEnv(this.env);
+        hs.setId(this.id);
+        hs.setParentId(this.parentId);
+        for (Host host : this.hostMap.values()) {
+            Host h = new Host(host.getIp(), host.getDomain());
+            h.setActive(host.isActive());
+            hs.setHost(h);
+        }
+        return hs;
+    }
+
     public String getEnv() {
         return env;
     }
