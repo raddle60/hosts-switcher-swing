@@ -135,15 +135,15 @@ public class HostsManager {
         db4oDao.saveHosts(hosts);
     }
 
-    private boolean isCycle(Set<String> parents, String parentId) {
+    public boolean isCycle(Set<String> parents, String parentId) {
         if (StringUtils.isNotEmpty(parentId)) {
             if (parents.contains(parentId)) {
                 return true;
             } else {
                 parents.add(parentId);
                 Hosts parent = db4oDao.getHosts(parentId);
-                if (parent != null) {
-                    return isCycle(parents, parent.getId());
+                if (parent != null && parent.getParentId() != null) {
+                    return isCycle(parents, parent.getParentId());
                 } else {
                     return false;
                 }
@@ -173,5 +173,9 @@ public class HostsManager {
             }
         }
         return existsHost;
+    }
+
+    public void deleteHosts(String id) {
+        db4oDao.deleteHosts(id);
     }
 }

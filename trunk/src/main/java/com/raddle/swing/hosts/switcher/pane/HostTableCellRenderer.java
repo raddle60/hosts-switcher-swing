@@ -6,6 +6,8 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.apache.commons.lang.StringUtils;
+
 public class HostTableCellRenderer extends DefaultTableCellRenderer {
 
     private static final long serialVersionUID = 1L;
@@ -16,7 +18,10 @@ public class HostTableCellRenderer extends DefaultTableCellRenderer {
         HostWrapper wrapper = (HostWrapper) table.getValueAt(row, 0);
         if (wrapper.isExist()) {
             if (wrapper.isActive()) {
-                rendererComponent.setForeground(Color.BLUE);
+                rendererComponent.setForeground(Color.BLACK);
+                if (!StringUtils.equals(wrapper.getIp(), wrapper.getInheritIp())) {
+                    rendererComponent.setForeground(Color.BLUE);
+                }
             } else {
                 rendererComponent.setForeground(Color.RED);
             }
