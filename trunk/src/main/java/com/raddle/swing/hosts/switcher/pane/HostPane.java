@@ -184,7 +184,7 @@ public class HostPane extends JPanel {
                 }
             }
         });
-        previewBtn.setBounds(12, 69, 60, 25);
+        previewBtn.setBounds(12, 71, 60, 25);
         add(previewBtn);
 
         JButton exportBtn = new JButton("导出");
@@ -245,7 +245,7 @@ public class HostPane extends JPanel {
                 }
             }
         });
-        saveBtn.setBounds(84, 69, 60, 25);
+        saveBtn.setBounds(451, 71, 60, 25);
         add(saveBtn);
 
         JButton addBtn = new JButton("添加");
@@ -267,7 +267,7 @@ public class HostPane extends JPanel {
                 }
             }
         });
-        addBtn.setBounds(159, 69, 65, 25);
+        addBtn.setBounds(82, 71, 65, 25);
         add(addBtn);
 
         JButton editBtn = new JButton("编辑");
@@ -278,7 +278,7 @@ public class HostPane extends JPanel {
                 editDomain();
             }
         });
-        editBtn.setBounds(236, 69, 60, 25);
+        editBtn.setBounds(159, 71, 60, 25);
         add(editBtn);
 
         JButton delBtn = new JButton("删除");
@@ -300,7 +300,7 @@ public class HostPane extends JPanel {
                 }
             }
         });
-        delBtn.setBounds(308, 69, 60, 25);
+        delBtn.setBounds(231, 71, 60, 25);
         add(delBtn);
 
         JButton deactiveBtn = new JButton("禁用");
@@ -326,7 +326,7 @@ public class HostPane extends JPanel {
                 }
             }
         });
-        deactiveBtn.setBounds(382, 69, 60, 25);
+        deactiveBtn.setBounds(305, 71, 60, 25);
         add(deactiveBtn);
 
         JButton activeBtn = new JButton("启用");
@@ -351,7 +351,7 @@ public class HostPane extends JPanel {
                 }
             }
         });
-        activeBtn.setBounds(458, 69, 60, 25);
+        activeBtn.setBounds(381, 71, 60, 25);
         add(activeBtn);
 
         JButton pasteImportBtn = new JButton("粘帖文本导入");
