@@ -331,7 +331,7 @@ public class HostPane extends JPanel {
         add(activeBtn);
     }
 
-    private void refreshTable() {
+    public void refreshTable() {
         table.clearSelection();
         // 填入jtable
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -410,5 +410,13 @@ public class HostPane extends JPanel {
                 JOptionPane.showMessageDialog(null, selectFile.getAbsoluteFile() + ", 不存在");
             }
         }
+    }
+
+    public Hosts getHosts() {
+        return hosts;
+    }
+
+    public void setHosts(Hosts hosts) {
+        this.hosts = hosts;
     }
 }

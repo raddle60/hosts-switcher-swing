@@ -1,12 +1,13 @@
 package com.raddle.swing.hosts.switcher;
 
 import java.awt.BorderLayout;
-import java.awt.Event;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.List;
+import java.util.UUID;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -14,13 +15,19 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.raddle.swing.hosts.switcher.dao.Db4oDao;
+import com.raddle.swing.hosts.switcher.manager.HostsManager;
+import com.raddle.swing.hosts.switcher.model.Hosts;
 import com.raddle.swing.hosts.switcher.pane.HostPane;
 
 public class HostsSwitcherApplication {
@@ -36,17 +43,15 @@ public class HostsSwitcherApplication {
     private JPanel jContentPane = null;
     private JMenuBar jJMenuBar = null;
     private JMenu fileMenu = null;
-    private JMenu editMenu = null;
     private JMenu helpMenu = null;
     private JMenuItem exitMenuItem = null;
     private JMenuItem aboutMenuItem = null;
-    private JMenuItem cutMenuItem = null;
-    private JMenuItem copyMenuItem = null;
-    private JMenuItem pasteMenuItem = null;
-    private JMenuItem saveMenuItem = null;
+    private JMenuItem addHostsItem = null;
     private JDialog aboutDialog = null;
     private JPanel aboutContentPane = null;
     private JLabel aboutVersionLabel = null;
+    private JTabbedPane tabbedPane;
+    private HostsManager hostsManager = new HostsManager();
 
     /**
      * This method initializes jFrame
@@ -61,10 +66,18 @@ public class HostsSwitcherApplication {
             jFrame.setSize(796, 572);
             jFrame.setContentPane(getJContentPane());
             jFrame.setTitle("Hosts 管理器");
-            //居中显示
+            // 居中显示
             double width = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
             double height = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
             jFrame.setLocation((int) (width - jFrame.getWidth()) / 2, (int) (height - jFrame.getHeight()) / 2);
+            // 初始化
+            List<Hosts> allHosts = hostsManager.getAllHosts();
+            for (Hosts hosts : allHosts) {
+                HostPane hostPane = new HostPane();
+                hostPane.setHosts(hosts);
+                hostPane.refreshTable();
+                tabbedPane.add(hosts.getEnv(), hostPane);
+            }
         }
         return jFrame;
     }
@@ -76,7 +89,9 @@ public class HostsSwitcherApplication {
      */
     private JPanel getJContentPane() {
         if (jContentPane == null) {
-            jContentPane = new HostPane();
+            jContentPane = new JPanel();
+            jContentPane.setLayout(new BorderLayout(0, 0));
+            jContentPane.add(getTabbedPane());
         }
         return jContentPane;
     }
@@ -90,7 +105,6 @@ public class HostsSwitcherApplication {
         if (jJMenuBar == null) {
             jJMenuBar = new JMenuBar();
             jJMenuBar.add(getFileMenu());
-            jJMenuBar.add(getEditMenu());
             jJMenuBar.add(getHelpMenu());
         }
         return jJMenuBar;
@@ -104,27 +118,11 @@ public class HostsSwitcherApplication {
     private JMenu getFileMenu() {
         if (fileMenu == null) {
             fileMenu = new JMenu();
-            fileMenu.setText("File");
-            fileMenu.add(getSaveMenuItem());
+            fileMenu.setText("操作");
+            fileMenu.add(getAddHostsItem());
             fileMenu.add(getExitMenuItem());
         }
         return fileMenu;
-    }
-
-    /**
-     * This method initializes jMenu
-     * 
-     * @return javax.swing.JMenu
-     */
-    private JMenu getEditMenu() {
-        if (editMenu == null) {
-            editMenu = new JMenu();
-            editMenu.setText("Edit");
-            editMenu.add(getCutMenuItem());
-            editMenu.add(getCopyMenuItem());
-            editMenu.add(getPasteMenuItem());
-        }
-        return editMenu;
     }
 
     /**
@@ -233,55 +231,30 @@ public class HostsSwitcherApplication {
      * 
      * @return javax.swing.JMenuItem
      */
-    private JMenuItem getCutMenuItem() {
-        if (cutMenuItem == null) {
-            cutMenuItem = new JMenuItem();
-            cutMenuItem.setText("Cut");
-            cutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, Event.CTRL_MASK, true));
-        }
-        return cutMenuItem;
-    }
+    private JMenuItem getAddHostsItem() {
+        if (addHostsItem == null) {
+            addHostsItem = new JMenuItem();
+            addHostsItem.addActionListener(new ActionListener() {
 
-    /**
-     * This method initializes jMenuItem
-     * 
-     * @return javax.swing.JMenuItem
-     */
-    private JMenuItem getCopyMenuItem() {
-        if (copyMenuItem == null) {
-            copyMenuItem = new JMenuItem();
-            copyMenuItem.setText("Copy");
-            copyMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Event.CTRL_MASK, true));
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String input = JOptionPane.showInputDialog("请输入Hosts名称");
+                    if (StringUtils.isNotBlank(input)) {
+                        Hosts hosts = new Hosts();
+                        hosts.setEnv(input);
+                        hosts.setId(UUID.randomUUID().toString());
+                        hostsManager.saveHosts(hosts);
+                        HostPane hostPane = new HostPane();
+                        hostPane.setHosts(hosts);
+                        hostPane.refreshTable();
+                        tabbedPane.add(hosts.getEnv(), hostPane);
+                    }
+                }
+            });
+            addHostsItem.setText("新增Hosts");
+            addHostsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UNDEFINED, 0));
         }
-        return copyMenuItem;
-    }
-
-    /**
-     * This method initializes jMenuItem
-     * 
-     * @return javax.swing.JMenuItem
-     */
-    private JMenuItem getPasteMenuItem() {
-        if (pasteMenuItem == null) {
-            pasteMenuItem = new JMenuItem();
-            pasteMenuItem.setText("Paste");
-            pasteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.CTRL_MASK, true));
-        }
-        return pasteMenuItem;
-    }
-
-    /**
-     * This method initializes jMenuItem
-     * 
-     * @return javax.swing.JMenuItem
-     */
-    private JMenuItem getSaveMenuItem() {
-        if (saveMenuItem == null) {
-            saveMenuItem = new JMenuItem();
-            saveMenuItem.setText("Save");
-            saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK, true));
-        }
-        return saveMenuItem;
+        return addHostsItem;
     }
 
     /**
@@ -305,5 +278,12 @@ public class HostsSwitcherApplication {
                 Db4oDao.close();
             }
         });
+    }
+
+    private JTabbedPane getTabbedPane() {
+        if (tabbedPane == null) {
+            tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+        }
+        return tabbedPane;
     }
 }
