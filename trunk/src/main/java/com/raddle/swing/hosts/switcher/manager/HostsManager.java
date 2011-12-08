@@ -21,6 +21,7 @@ import org.apache.commons.lang.time.DateFormatUtils;
 import com.raddle.swing.hosts.switcher.dao.Db4oDao;
 import com.raddle.swing.hosts.switcher.model.Host;
 import com.raddle.swing.hosts.switcher.model.Hosts;
+import com.raddle.swing.hosts.switcher.pane.HostWrapper;
 
 /**
  * 功能描述：
@@ -72,15 +73,31 @@ public class HostsManager {
     }
 
     public void writeHosts(Hosts hosts, Writer writer) {
+        List<Host> allHost = new ArrayList<Host>();
+        allHost.addAll(hosts.getHostList());
+        if (StringUtils.isNotEmpty(hosts.getParentId())) {
+            for (Host host : getAllInheritHost(hosts.getParentId()).values()) {
+                if (hosts.getHost(host.getDomain()) == null) {
+                    allHost.add(host);
+                }
+            }
+        }
+        List<HostWrapper> allWrapperHost = new ArrayList<HostWrapper>();
+        for (Host host : allHost) {
+            allWrapperHost.add(new HostWrapper(this, hosts, hosts.getHost(host.getDomain()) == null ? null : host, host.getDomain()));
+        }
         /// 转成hosts格式
         Map<String, Set<String>> hostMap = new HashMap<String, Set<String>>();
-        for (Host host : hosts.getHostList()) {
-            Set<String> domains = hostMap.get(host.getIp());
-            if (domains == null) {
-                domains = new HashSet<String>();
-                hostMap.put(host.getIp(), domains);
+        for (HostWrapper wrapperHost : allWrapperHost) {
+            String finalIp = wrapperHost.getFinalIp();
+            if (StringUtils.isNotBlank(finalIp)) {
+                Set<String> domains = hostMap.get(finalIp);
+                if (domains == null) {
+                    domains = new HashSet<String>();
+                    hostMap.put(finalIp, domains);
+                }
+                domains.add(wrapperHost.getDomain());
             }
-            domains.add(host.getDomain());
         }
         ///
         PrintWriter bw = new PrintWriter(writer);
