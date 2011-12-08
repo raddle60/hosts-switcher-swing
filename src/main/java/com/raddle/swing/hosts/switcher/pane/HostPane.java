@@ -16,7 +16,9 @@ import java.io.FileWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.swing.DefaultComboBoxModel;
@@ -83,7 +85,25 @@ public class HostPane extends JPanel {
             public void itemStateChanged(ItemEvent event) {
                 if (event.getStateChange() == ItemEvent.SELECTED) {
                     HostsItem item = (HostsItem) inheritComb.getSelectedItem();
-                    hosts.setParentId(item.getHostsId());
+                    Set<String> exists = new HashSet<String>();
+                    if (StringUtils.isNotEmpty(hosts.getId())) {
+                        exists.add(hosts.getId());
+                    }
+                    if (!hostsManager.isCycle(exists, item.getHostsId())) {
+                        hosts.setParentId(item.getHostsId());
+                        refreshTable();
+                    } else {
+                        for (int i = 0; i < inheritComb.getModel().getSize(); i++) {
+                            HostsItem hostsItem = inheritComb.getModel().getElementAt(i);
+                            if ((hostsItem == null && hosts.getParentId() == null) || hostsItem != null && StringUtils.equals(hosts.getParentId(), hostsItem.getHostsId())) {
+                                inheritComb.setSelectedIndex(i);
+                                break;
+                            }
+                        }
+                        JOptionPane.showMessageDialog(null, "循环依赖");
+                    }
+                } else if (inheritComb.getSelectedItem() == null && hosts.getParentId() != null) {
+                    hosts.setParentId(null);
                     refreshTable();
                 }
             }
