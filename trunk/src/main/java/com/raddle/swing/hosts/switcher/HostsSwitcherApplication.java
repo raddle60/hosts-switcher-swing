@@ -54,6 +54,7 @@ public class HostsSwitcherApplication {
     private JLabel aboutVersionLabel = null;
     private JTabbedPane tabbedPane;
     private HostsManager hostsManager = new HostsManager();
+    private JMenuItem deleteHostsItem;
 
     /**
      * This method initializes jFrame
@@ -123,6 +124,7 @@ public class HostsSwitcherApplication {
             fileMenu = new JMenu();
             fileMenu.setText("操作");
             fileMenu.add(getAddHostsItem());
+            fileMenu.add(getDeleteHostsItem());
             fileMenu.add(getExitMenuItem());
         }
         return fileMenu;
@@ -288,5 +290,25 @@ public class HostsSwitcherApplication {
             tabbedPane = new JTabbedPane(JTabbedPane.TOP);
         }
         return tabbedPane;
+    }
+
+    private JMenuItem getDeleteHostsItem() {
+        if (deleteHostsItem == null) {
+            deleteHostsItem = new JMenuItem("删除Hosts");
+            deleteHostsItem.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    HostPane hostPane = (HostPane) tabbedPane.getSelectedComponent();
+                    if (hostPane != null) {
+                        if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(null, "你确定要删除[" + hostPane.getHosts().getEnv() + "]")) {
+                            hostsManager.deleteHosts(hostPane.getHosts().getId());
+                            tabbedPane.remove(hostPane);
+                        }
+                    }
+                }
+            });
+        }
+        return deleteHostsItem;
     }
 }
