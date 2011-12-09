@@ -25,7 +25,7 @@ import com.raddle.swing.hosts.switcher.pane.HostWrapper;
 
 /**
  * 功能描述：
- * 
+ *
  * @author xurong time : 2011-11-23 下午03:52:37
  */
 public class HostsManager {
@@ -35,7 +35,7 @@ public class HostsManager {
 
     /**
      * 从文件解析hosts
-     * 
+     *
      * @param reader
      * @return
      */
@@ -48,15 +48,15 @@ public class HostsManager {
                 line = line.trim();
                 // 不为#开头
                 if (line.length() > 0 && !"#".startsWith(line)) {
-                    // 尾上的注释
+                    // 可能尾上有注释
                     int index = line.indexOf("#");
                     if (index != -1) {
                         line = line.substring(0, index).trim();
                     }
-                    // 可能尾上有注释
                     if (line.length() > 0) {
                         String[] hds = SPLIT_PATTERN.split(line);
-                        if (hds.length > 2) {
+                        if (hds.length > 1) {
+                            // ip 后面有多个域名
                             String ip = hds[0];
                             for (int i = 1; i < hds.length; i++) {
                                 hosts.setHost(new Host(ip, hds[i]));
@@ -84,7 +84,8 @@ public class HostsManager {
         }
         List<HostWrapper> allWrapperHost = new ArrayList<HostWrapper>();
         for (Host host : allHost) {
-            allWrapperHost.add(new HostWrapper(this, hosts, hosts.getHost(host.getDomain()) == null ? null : host, host.getDomain()));
+            allWrapperHost.add(new HostWrapper(this, hosts, hosts.getHost(host.getDomain()) == null ? null : host, host
+                    .getDomain()));
         }
         /// 转成hosts格式
         Map<String, Set<String>> hostMap = new HashMap<String, Set<String>>();
@@ -102,7 +103,8 @@ public class HostsManager {
         ///
         PrintWriter bw = new PrintWriter(writer);
         // 输入注释
-        bw.println("######generate by raddle hosts manager " + DateFormatUtils.format(new Date(), "yyyy/M/d H:m:s") + "######");
+        bw.println("######generate by raddle hosts manager " + DateFormatUtils.format(new Date(), "yyyy/M/d H:m:s")
+                + "######");
         bw.println("######env:" + StringUtils.defaultString(hosts.getEnv()) + "######");
         for (String ip : hostMap.keySet()) {
             List<String> domainList = new ArrayList<String>(hostMap.get(ip));
