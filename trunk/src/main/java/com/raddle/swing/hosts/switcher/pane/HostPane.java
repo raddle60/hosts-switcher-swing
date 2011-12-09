@@ -49,7 +49,7 @@ public class HostPane extends JPanel {
     private JTextField envTxt;
     private JTable table;
     private JTextField importTxt;
-    private JComboBox<HostsItem> inheritComb;
+    private JComboBox inheritComb;
     private HostsManager hostsManager = new HostsManager();
     private Hosts hosts = new Hosts();
     private boolean initComb = false;
@@ -80,7 +80,7 @@ public class HostPane extends JPanel {
         label_1.setBounds(230, 12, 60, 15);
         add(label_1);
 
-        inheritComb = new JComboBox<HostsItem>();
+        inheritComb = new JComboBox();
         inheritComb.addItemListener(new ItemListener() {
 
             @Override
@@ -96,7 +96,7 @@ public class HostPane extends JPanel {
                         refreshTable();
                     } else {
                         for (int i = 0; i < inheritComb.getModel().getSize(); i++) {
-                            HostsItem hostsItem = inheritComb.getModel().getElementAt(i);
+                            HostsItem hostsItem = (HostsItem) inheritComb.getModel().getElementAt(i);
                             if (hostsItem != null && StringUtils.equals(hosts.getParentId(), hostsItem.getHostsId())) {
                                 inheritComb.setSelectedIndex(i);
                                 break;
@@ -486,7 +486,7 @@ public class HostPane extends JPanel {
         try {
             initComb = true;
             List<Hosts> allHosts = hostsManager.getAllHosts();
-            DefaultComboBoxModel<HostsItem> hostsModel = (DefaultComboBoxModel<HostsItem>) inheritComb.getModel();
+            DefaultComboBoxModel hostsModel = (DefaultComboBoxModel) inheritComb.getModel();
             hostsModel.removeAllElements();
             hostsModel.addElement(new HostsItem(null, null));
             for (Hosts hosts : allHosts) {
@@ -496,7 +496,7 @@ public class HostPane extends JPanel {
             initComb = false;
         }
         for (int i = 0; i < inheritComb.getModel().getSize(); i++) {
-            HostsItem hostsItem = inheritComb.getModel().getElementAt(i);
+            HostsItem hostsItem = (HostsItem) inheritComb.getModel().getElementAt(i);
             if (hostsItem != null && StringUtils.equals(hosts.getParentId(), hostsItem.getHostsId())) {
                 inheritComb.setSelectedIndex(i);
                 break;
